@@ -23,7 +23,8 @@
 void initialize() {
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
-
+    chassis.setPose(0, 0, 0); // set position to x:0, y:0, heading:0
+    
     // the default rate is 50. however, if you need to change the rate, you
     // can do the following.
     // lemlib::bufferedStdout().setRate(...);
@@ -39,8 +40,6 @@ void initialize() {
             pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
             pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-            pros::lcd::print(3,"Battery Capacity: %d\n", controller.get_battery_capacity());
-            pros::lcd::print(4,"Battery's Voltage: %d\n", pros::c::battery_get_voltage());
             // log position telemetry
             lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
             // delay to save resources
@@ -61,6 +60,7 @@ void competition_initialize() {}
 
 // get a path used for pure pursuit
 // this needs to be put outside a function
+
 ASSET(example_txt); // '.' replaced with "_" to make c++ happy
 
 /**
@@ -69,36 +69,32 @@ ASSET(example_txt); // '.' replaced with "_" to make c++ happy
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 void autonomous() {
-    // set position to x:0, y:0, heading:0
-    // chassis.setPose(0, 0, 0);
-    // turn to face heading 90 with a very long timeout
-    // chassis.turnToHeading(90,999999999999);
-    // Move to x: 20 and y: 15, and face heading 90. Timeout set to 4000 ms
-    // chassis.moveToPose(20, 15, 90, 4000);
-    // Move to x: 0 and y: 0 and face heading 270, going backwards. Timeout set to 4000ms
-    // chassis.moveToPose(0, 0, 270, 4000, {.forwards = false});
-    // cancel the movement after it has traveled 10 inches
-    // chassis.waitUntil(10);
-    // chassis.cancelMotion();
-    // Turn to face the point x:45, y:-45. Timeout set to 1000
-    // dont turn faster than 60 (out of a maximum of 127)
-    // chassis.turnToPoint(45, -45, 1000, {.maxSpeed = 60});
-    // Turn to face a direction of 90º. Timeout set to 1000
-    // will always be faster than 100 (out of a maximum of 127)
-    // also force it to turn clockwise, the long way around
-    // chassis.turnToHeading(90, 1000, {.direction = AngularDirection::CW_CLOCKWISE, .minSpeed = 100});
-    // Follow the path in path.txt. Lookahead at 15, Timeout set to 4000
-    // following the path with the back of the robot (forwards = false)
-    // see line 116 to see how to define a path
-    // chassis.follow(example_txt, 15, 4000, false);
-    // wait until the chassis has traveled 10 inches. Otherwise the code directly after
-    // the movement will run immediately
-    // Unless its another movement, in which case it will wait
-    // chassis.waitUntil(10);
-    // pros::lcd::print(4, "Traveled 10 inches during pure pursuit!");
-    // wait until the movement is done
-    // chassis.waitUntilDone();
-    // pros::lcd::print(4, "pure pursuit finished!");
+    IO4.move_velocity(-130); // This is 200 because it's a 200rpm motor
+    IO5.move_velocity(200);
+    IO7.move_velocity(200);
+
+    // chassis.moveToPose(-5.396, 21.611, 17, 4000);
+    // chassis.follow(example_txt, 15, 2000);
+    // rightMotors.move_velocity(200);
+    // leftmotors.move_velocity(200);
+    // pros::delay(1500);
+    // rightMotors.move_velocity(0);
+    // leftmotors.move_velocity(0);
+    /** 
+    chassis.moveToPose(
+        48,
+        -24,
+        90,
+        2000,
+        {.minSpeed=72, .earlyExitRange=8}
+        // a minSpeed of 72 means that the chassis will slow down as
+        // it approaches the target point, but it won't come to a full stop
+
+        // an earlyExitRange of 8 means the movement will exit 8" away from
+        // the target point
+    );
+    */
+
 }
 
 /**
@@ -106,7 +102,6 @@ void autonomous() {
  */
 
 void opcontrol() {
-     // controller
     // loop to continuously update motors
     while (true) {
         // get left y and right x positions (get joystick positions)
@@ -141,6 +136,12 @@ void opcontrol() {
             IO5.move_velocity(200);
             IO7.move_velocity(200);
             // This is mapped to Bottom Outtake
+        }
+        else if (controller.get_digital(DIGITAL_L2)) {
+            IO4.move_velocity(-130); // This is 200 because it's a 200rpm motor
+            IO5.move_velocity(200);
+            IO7.move_velocity(200);
+            // This is mapped to Basket
         }
         else {
             IO4.move_velocity(0); 
