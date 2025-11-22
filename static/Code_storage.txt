@@ -1,0 +1,28 @@
+// compact mapping-based approach: priority is the order below
+        // each Mode struct maps a controller button to motor velocities for IO4, IO5, IO7
+        struct Mode { pros::controller_digital_e_t btn; int v4, v5, v7; };
+        
+        // array of predefined motor control modes, checked in order (first match wins)
+        static const Mode modes[] = {
+            { pros::E_CONTROLLER_DIGITAL_R1, -200, -200, -200 }, // Top Outtake: all motors reverse at 200
+            { pros::E_CONTROLLER_DIGITAL_R2, -200, -200,  200 }, // Middle Outtake: IO4/IO5 reverse, IO7 forward
+            { pros::E_CONTROLLER_DIGITAL_L1,  200,  200,  200 }, // Bottom Outtake: all motors forward at 200
+            { pros::E_CONTROLLER_DIGITAL_L2, -130,  200,  200 }  // Basket: IO4 reverse at 130, IO5/IO7 forward
+        };
+
+        // initialize motor velocity targets to zero
+        int t4 = 0, t5 = 0, t7 = 0;
+        
+        // check each button in priority order (stop at first pressed button)
+        for (const auto &m : modes) {
+            if (controller.get_digital(m.btn)) {
+            // button is pressed: set velocities from this mode
+            t4 = m.v4; t5 = m.v5; t7 = m.v7;
+            break; // exit loop - higher priority modes are checked first
+            }
+        }
+
+        // apply the selected velocities to the intake/outtake motors
+        IO4.move_velocity(t4);
+        IO5.move_velocity(t5);
+        IO7.move_velocity(t7);

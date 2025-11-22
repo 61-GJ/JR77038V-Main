@@ -9,7 +9,6 @@
  */
 
 #include "main.h"
-#include "liblvgl/lvgl.h" // For LVGL Screen Interface
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "Create.hpp" // Robot Setup File 
 
@@ -61,7 +60,7 @@ void competition_initialize() {}
 // get a path used for pure pursuit
 // this needs to be put outside a function
 
-ASSET(example_txt); // '.' replaced with "_" to make c++ happy
+ASSET(PartA_txt); // '.' replaced with "_" to make c++ happy
 
 /**
  * Runs during auto
@@ -69,17 +68,12 @@ ASSET(example_txt); // '.' replaced with "_" to make c++ happy
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 void autonomous() {
-    IO4.move_velocity(-130); // This is 200 because it's a 200rpm motor
-    IO5.move_velocity(200);
-    IO7.move_velocity(200);
-
-    // chassis.moveToPose(-5.396, 21.611, 17, 4000);
-    // chassis.follow(example_txt, 15, 2000);
-    // rightMotors.move_velocity(200);
-    // leftmotors.move_velocity(200);
-    // pros::delay(1500);
-    // rightMotors.move_velocity(0);
-    // leftmotors.move_velocity(0);
+    
+    rightMotors.move_velocity(200);
+    leftmotors.move_velocity(200);
+    pros::delay(1500);
+    rightMotors.move_velocity(0);
+    leftmotors.move_velocity(0);
     /** 
     chassis.moveToPose(
         48,
@@ -126,9 +120,9 @@ void opcontrol() {
             // This is mapped to Top Outtake
         }
         else if (controller.get_digital(DIGITAL_R2)) {
-            IO4.move_velocity(-200); // This is 200 because it's a 200rpm motor
-            IO5.move_velocity(-200);
-            IO7.move_velocity(200);
+            IO4.move_velocity(-150); // This is 200 because it's a 200rpm motor
+            IO5.move_velocity(-150);
+            IO7.move_velocity(150);
             // This is mapped to Middle outake 
         }
         else if (controller.get_digital(DIGITAL_L1)) {
@@ -138,7 +132,7 @@ void opcontrol() {
             // This is mapped to Bottom Outtake
         }
         else if (controller.get_digital(DIGITAL_L2)) {
-            IO4.move_velocity(-130); // This is 200 because it's a 200rpm motor
+            IO4.move_velocity(-130); // Set to -130 for basket operation (200rpm motor)
             IO5.move_velocity(200);
             IO7.move_velocity(200);
             // This is mapped to Basket

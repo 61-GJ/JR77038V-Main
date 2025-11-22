@@ -1,5 +1,4 @@
 #include "main.h"
-#include "liblvgl/lvgl.h" // For LVGL Screen Interface
 #include "lemlib/api.hpp" // IWYU pragma: keep
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
