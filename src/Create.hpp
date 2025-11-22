@@ -15,7 +15,7 @@ extern pros::Motor IO7;
 
 // Creating the components for the chassis
 extern pros::MotorGroup leftmotors;
-extern pros::MotorGroup rightMotors;
+extern pros::MotorGroup rightmotors;
 
 extern lemlib::Drivetrain drivetrain;
 extern pros::Imu imu;
@@ -27,3 +27,8 @@ extern lemlib::ExpoDriveCurve steer_curve;
 
 // create the chassis
 extern lemlib::Chassis chassis;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Creating A motor Group for the outtake motors
+extern void IO_velocities(int velocity_IO4, int velocity_IO5, int velocity_IO7);

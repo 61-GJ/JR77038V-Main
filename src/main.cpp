@@ -3,9 +3,6 @@
  * Purpose: The Program that is designated to be uploaded to the
  * Team 77038V [/Voltage] Robot and is updated based on the 
  * progress of the more experimental programs.
- * Dependants: 77038V -- [[NOTEBOOK_READABLE]]
- * Dependencies: 77038V -- [[HOME/EXPERIMENTAL]]
- *               [[LVGL_TEST]]
  */
 
 #include "main.h"
@@ -57,23 +54,21 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-// get a path used for pure pursuit
-// this needs to be put outside a function
-
-ASSET(PartA_txt); // '.' replaced with "_" to make c++ happy
-
 /**
  * Runs during auto
  *
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 void autonomous() {
-    
-    rightMotors.move_velocity(200);
+    // chassis.moveToPose(11.84, 45.406, 57, 5000, {.lead = 0.3,});
+    // IO_velocities(-150, -150, 150);
+
+    rightmotors.move_velocity(200);
     leftmotors.move_velocity(200);
-    pros::delay(1500);
-    rightMotors.move_velocity(0);
+    pros::delay(1000);
+    rightmotors.move_velocity(0);
     leftmotors.move_velocity(0);
+
     /** 
     chassis.moveToPose(
         48,
@@ -94,7 +89,6 @@ void autonomous() {
 /**
  * Runs in driver control
  */
-
 void opcontrol() {
     // loop to continuously update motors
     while (true) {
@@ -114,33 +108,23 @@ void opcontrol() {
 
 
         if (controller.get_digital(DIGITAL_R1)) {
-            IO4.move_velocity(-200); // This is 200 because it's a 200rpm motor
-            IO5.move_velocity(-200);
-            IO7.move_velocity(-200);
+            IO_velocities(-200, -200, -200);
             // This is mapped to Top Outtake
         }
         else if (controller.get_digital(DIGITAL_R2)) {
-            IO4.move_velocity(-150); // This is 200 because it's a 200rpm motor
-            IO5.move_velocity(-150);
-            IO7.move_velocity(150);
+            IO_velocities(-150, -150, 150);
             // This is mapped to Middle outake 
         }
         else if (controller.get_digital(DIGITAL_L1)) {
-            IO4.move_velocity(200); // This is 200 because it's a 200rpm motor
-            IO5.move_velocity(200);
-            IO7.move_velocity(200);
+            IO_velocities(200, 200, 200);
             // This is mapped to Bottom Outtake
         }
         else if (controller.get_digital(DIGITAL_L2)) {
-            IO4.move_velocity(-130); // Set to -130 for basket operation (200rpm motor)
-            IO5.move_velocity(200);
-            IO7.move_velocity(200);
+            IO_velocities(-130, 200, 200);
             // This is mapped to Basket
         }
         else {
-            IO4.move_velocity(0); 
-            IO5.move_velocity(0);
-            IO7.move_velocity(0);
+            IO_velocities(0, 0, 0);
             // Required else function for when no inputs are pressed
         }
 

@@ -14,12 +14,12 @@ pros::Motor IO5 (5, pros::MotorGearset::green);
 pros::Motor IO7 (7, pros::MotorGearset::green);
 
 pros::MotorGroup leftmotors({-11, -12, -13}, pros::MotorGearset::blue); // left motors use 600 RPM cartridges
-pros::MotorGroup rightMotors({20, 19, 18}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
+pros::MotorGroup rightmotors({20, 19, 18}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
 // left motors on ports 11 (forwards), 12 (reversed), and 13 (reversed)
 // right motors on ports 18 (reversed), 19 (forwards), and 20 (forwards)
 
 lemlib::Drivetrain drivetrain(&leftmotors, // left motor group
-                              &rightMotors, // right motor group
+                              &rightmotors, // right motor group
                               10.75, // 11 inch track width
                               lemlib::Omniwheel::OLD_325, // using old 3.25" omnis
                               450, // drivetrain rpm is 360
@@ -79,3 +79,13 @@ lemlib::Chassis chassis(drivetrain,
                         &throttle_curve, 
                         &steer_curve
 );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Creating A motor Group for the outtake motors
+void IO_velocities(int velocity_IO4, int velocity_IO5, int velocity_IO7)
+{
+    IO4.move_velocity(velocity_IO4);
+    IO5.move_velocity(velocity_IO5);
+    IO7.move_velocity(velocity_IO7);
+}
