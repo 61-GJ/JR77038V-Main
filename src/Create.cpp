@@ -5,35 +5,44 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Creating the Pneumatics
-pros::adi::Pneumatics MainPistons('a', false);
+pros::adi::Pneumatics Hood('b', true); // PS: 'true' means the pistons start retracted
+pros::adi::Pneumatics scraperPistion('c', true);
+pros::adi::Pneumatics DPmechPiston('d', false);
 
 //Motors responsible for Intake & Outtake 
-pros::Motor IO10 (10, pros::MotorGearset::green);
-pros::Motor IO8 (8, pros::MotorGearset::green);
-// Intake/Outtake motors on ports 8 and 10 (both forwards)
+pros::Motor IO2 (2, pros::MotorGearset::blue);
+pros::Motor IO3 (-3, pros::MotorGearset::green);
+pros::Motor IO4 (4, pros::MotorGearset::green);
+// Intake/Outtake motors on ports 8, 9, and 10 (all forwards)
+
+pros::Optical optical_sensor(6); // Optical sensor on port 6
 
 // Creating the components for the chassis
-pros::MotorGroup leftmotors({-16, -15, -14}, pros::MotorGearset::blue); // left motors use 600 RPM cartridges
-pros::MotorGroup rightmotors({11, 12, 13}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
-// left motors on ports 11 (forwards), 12 (reversed), and 13 (forwards)
-// right motors on ports 16 (reversed), 15 (forwards), and 14 (reversed)
+pros::MotorGroup leftmotors({-19, 18, -20}, pros::MotorGearset::blue); // left motors use 600 RPM cartridges
+pros::MotorGroup rightmotors({13, -15, 14}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
+// left motors on ports 19 (reversed), 18 (reversed), and 20 (reversed)
+// right motors on ports 13 (forwards), 15 (forwards), and 14 (forwards)
 
+/**  Note:
+  *  Front Width: 13 inches
+  *  Side Length: 15.5 inches
+  */  
 lemlib::Drivetrain drivetrain(&leftmotors, // left motor group
                               &rightmotors, // right motor group
-                              11.75, // 11 inch track width
+                              10, // Filler input 
                               lemlib::Omniwheel::OLD_325, // using old 3.25" omnis
-                              480, // drivetrain rpm is 480
-                              2 // horizontal drift is 2 (for now)
+                              360, // drivetrain rpm is 4360
+                              8 // horizontal drift is 2 (for now)
 );
 
-// pros::Imu imu(10); // creates an V5 Inertial Sensors (IMU) on port 10
+pros::Imu imu(10); // creates an V5 Inertial Sensors (IMU) on port 10
 
+// sensor group for odometry
 lemlib::OdomSensors sensors(nullptr, // no vertical tracking wheels, set to nullptr
                     nullptr, // no second vertical tracking wheel, set to nullptr
                     nullptr, // no horizontal tracking wheels, set to nullptr
                     nullptr, // no second horizontal tracking wheel, set to nullptr
-                    nullptr); // IMU
-
+                    &imu); // IMU
 
 // lateral PID controller
 lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
@@ -83,8 +92,9 @@ lemlib::Chassis chassis(drivetrain,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Creating A motor Group for the outtake motors
-void IO_velocities(int velocites)
+void IO_velocities(int bottom, int middle, int top)
 {
-    IO10.move_velocity(velocites);
-    IO8.move_velocity(velocites);
+    IO2.move_velocity(bottom);
+    IO3.move_velocity(middle);
+    IO4.move_velocity(top);
 }

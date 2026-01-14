@@ -39,10 +39,79 @@ void initialize() {
             // log position telemetry
             lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
             // delay to save resources
+
+            
+
             pros::delay(50);
         }
     });
 }
+
+void Right_side() {
+    // function for right side autonomous
+    chassis.moveToPoint(0, 18.248, 5000);
+    chassis.turnToHeading(90, 3000);
+    IO_velocities(600,200,200);
+    Hood.retract();
+
+    chassis.moveToPose(6.292, 46.982, 0, 5000, {.lead=0.9});
+    chassis.turnToHeading(180, 3000);
+    
+    chassis.moveToPose(30.7, 14.531, 90, 5000., {.lead=0.6});
+    chassis.turnToHeading(180, 3000);
+
+    chassis.moveToPoint(30.7, 31, 5000,{.forwards = false});
+    chassis.waitUntilDone();
+    Hood.extend();
+}
+
+void Left_side() {
+    // function for left side autonomous
+    chassis.moveToPoint(0, 18.248, 5000);
+    chassis.turnToHeading(270, 3000);
+    IO_velocities(600,200,200);
+    Hood.retract();
+
+    chassis.moveToPose(-6.292, 46.982, 0, 5000, {.lead=0.9});
+    chassis.turnToHeading(180, 3000);
+
+    chassis.moveToPose(-30.7, 14.531, 270, 5000, {.lead=0.6});
+    chassis.turnToHeading(180, 3000);
+
+    chassis.moveToPoint(-30.7, 31, 5000, {.forwards = false});
+    chassis.waitUntilDone();
+    Hood.extend();
+
+}
+
+void Skills() {
+    chassis.moveToPoint(0, 20.135, 5000);
+    chassis.turnToHeading(90, 3000);
+    IO_velocities(600,200,200);
+    Hood.retract();
+
+    chassis.moveToPose(7.551, 44.885, 0, 5000, {.lead=0.9});
+    chassis.turnToHeading(90, 3000);
+
+    chassis.moveToPose(-2.263, 49.642, 135, 5000, {.forwards = false});
+    chassis.waitUntilDone();
+    Hood.extend();
+
+    chassis.moveToPoint(10, 38.892, 5000);
+    chassis.turnToHeading(270, 3000);
+    Hood.retract();
+
+    chassis.moveToPoint(-49.729, 38.892, 5000);
+
+    chassis.moveToPose(-29.413, 48.96, 225, 5000,{.forwards = false});
+    chassis.waitUntilDone();
+    Hood.extend();
+}
+
+void Neutral() {
+    chassis.moveToPoint(0, 5, 5000);
+}
+
 
 /**
  * Runs while the robot is disabled
@@ -60,30 +129,7 @@ void competition_initialize() {}
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 void autonomous() {
-    // chassis.moveToPose(11.84, 45.406, 57, 5000, {.lead = 0.3,});
-    // IO_velocities(-150, -150, 150);
-
-    rightmotors.move_velocity(200);
-    leftmotors.move_velocity(200);
-    pros::delay(1000);
-    rightmotors.move_velocity(0);
-    leftmotors.move_velocity(0);
-
-    /** 
-    chassis.moveToPose(
-        48,
-        -24,
-        90,
-        2000,
-        {.minSpeed=72, .earlyExitRange=8}
-        // a minSpeed of 72 means that the chassis will slow down as
-        // it approaches the target point, but it won't come to a full stop
-
-        // an earlyExitRange of 8 means the movement will exit 8" away from
-        // the target point
-    );
-    */
-
+    Skills();
 }
 
 /**
@@ -99,23 +145,51 @@ void opcontrol() {
         // move the robot
         chassis.tank(leftY, rightY);
         
+        // Pneumatics Control
         
-        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-            MainPistons.extend();
+        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+            scraperPistion.toggle();
         }
-        else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
-            MainPistons.retract();
+        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)){
+            DPmechPiston.toggle();
         }
-        
 
+        // Debugging
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+            scraperPistion.extend();
+        }
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+            scraperPistion.retract();
+        }
+
+
+        // Optical Sensor Configuration
+        optical_sensor.disable_gesture();
+        optical_sensor.set_led_pwm(50);
+
+        // Intake & Outtake Control
         if (controller.get_digital(DIGITAL_R1)) {
-            IO_velocities(150);
+            IO_velocities(600,200,200);
+            Hood.retract();
+            // Intake with Hood retracted
         }
         else if (controller.get_digital(DIGITAL_R2)) {
-            IO_velocities(-150);
+            IO_velocities(-600,-200,-200);
+            // Bottom outtake
+        }
+        else if (controller.get_digital(DIGITAL_L1)) {
+            IO_velocities(600,200,200);
+            Hood.extend();
+            // Intake with Hood extended
+        }
+        else if (controller.get_digital(DIGITAL_L2)) {
+            IO_velocities(600,200,-200);
+            Hood.retract();
+            // Middle outtake 
+
         }
         else {
-            IO_velocities(0);
+            IO_velocities(0,0,0);
             // Required else function for when no inputs are pressed
         }
 
