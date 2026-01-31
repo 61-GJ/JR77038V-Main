@@ -47,65 +47,97 @@ void initialize() {
     });
 }
 
-void Right_side() {
-    // function for right side autonomous
+void Left_side() {
+    // function for left side autonomous
+    // Move between Long goal and Loader
     chassis.moveToPoint(0, 18.248, 5000);
-    chassis.turnToHeading(90, 3000);
-    IO_velocities(600,200,200);
+    chassis.turnToHeading(270, 3000);
+    IO_velocities(200,-300,200);
     Hood.retract();
 
-    chassis.moveToPose(6.292, 46.982, 0, 5000, {.lead=0.9});
+    // Collect Octoballs from Bottom Right Pile
+    chassis.moveToPose(-6.292, 46.982, 0, 2000, {.horizontalDrift = 2, .lead=0.9});
+    chassis.turnToHeading(180, 2000);
+    
+    //postiing bot between loader and long goal
+    chassis.moveToPose(-30.7, 14.531, 270, 3000., {.horizontalDrift = 2, .lead=0.575, });
+    chassis.turnToHeading(180, 3000);
+    scraperPistion.toggle();
+
+    // Collect Octoballs from Loader
+    chassis.moveToPoint(-30.7,  6, 3000);
+    chassis.waitUntilDone();
+    pros::delay(200);
+
+    // Output Octoballs into Long Goal
+    chassis.moveToPoint(-30.7, 31, 5000,{.forwards = false});
+    chassis.waitUntilDone();
+    Hood.extend();
+}
+
+void Right_side() {
+    // function for right side autonomous
+    // Move between Long goal and Loader
+    chassis.moveToPoint(0, 18.248, 5000);
+    chassis.turnToHeading(90, 3000);
+    IO_velocities(200,-300,200);
+    Hood.retract();
+
+    // Collect Octoballs from Bottom Right Pile
+    chassis.moveToPose(6.292, 46.982, 0, 5000, {.horizontalDrift = 2,.lead=0.9});
     chassis.turnToHeading(180, 3000);
     
-    chassis.moveToPose(30.7, 14.531, 90, 5000., {.lead=0.6});
+    //postiing bot between loader and long goal
+    chassis.moveToPose(30.7, 14.531, 90, 5000., {.horizontalDrift = 2,.lead=0.6});
     chassis.turnToHeading(180, 3000);
 
+    // Collect Octoballs from Loader
+    chassis.moveToPoint(-30.7,  6, 3000);
+    chassis.waitUntilDone();
+    pros::delay(200);
+    
+    // Output Octoballs into Long Goal
     chassis.moveToPoint(30.7, 31, 5000,{.forwards = false});
     chassis.waitUntilDone();
     Hood.extend();
 }
 
-void Left_side() {
-    // function for left side autonomous
-    chassis.moveToPoint(0, 18.248, 5000);
-    chassis.turnToHeading(270, 3000);
-    IO_velocities(600,200,200);
-    Hood.retract();
-
-    chassis.moveToPose(-6.292, 46.982, 0, 5000, {.lead=0.9});
-    chassis.turnToHeading(180, 3000);
-
-    chassis.moveToPose(-30.7, 14.531, 270, 5000, {.lead=0.6});
-    chassis.turnToHeading(180, 3000);
-
-    chassis.moveToPoint(-30.7, 31, 5000, {.forwards = false});
-    chassis.waitUntilDone();
-    Hood.extend();
-
-}
-
 void Skills() {
-    chassis.moveToPoint(0, 20.135, 5000);
+    // Move between Long goal and Loader 
+    chassis.moveToPoint(0, 47, 5000, {.maxSpeed=100});
     chassis.turnToHeading(90, 3000);
-    IO_velocities(600,200,200);
+    IO_velocities(200,-300,200);
+    scraperPistion.toggle();
     Hood.retract();
 
-    chassis.moveToPose(7.551, 44.885, 0, 5000, {.lead=0.9});
-    chassis.turnToHeading(90, 3000);
+    // Collect Octoballs from Loader
+    chassis.moveToPoint(10, 47, 5000);
+    chassis.waitUntilDone();
+    pros::delay(500);
 
-    chassis.moveToPose(-2.263, 49.642, 135, 5000, {.forwards = false});
+    // Output Octoballs into Long Goal
+    chassis.moveToPoint(-15, 47, 5000,{.forwards = false});
     chassis.waitUntilDone();
     Hood.extend();
+    pros::delay(1000);
+    scraperPistion.toggle();
+    Hood.retract();
 
-    chassis.moveToPoint(10, 38.892, 5000);
+    // Position to Collect Octoballs from Botom right Center Field
+    chassis.moveToPose(0, 23, 180, 5000, {.horizontalDrift = 2,.lead=0.8});
     chassis.turnToHeading(270, 3000);
-    Hood.retract();
 
-    chassis.moveToPoint(-49.729, 38.892, 5000);
-
-    chassis.moveToPose(-29.413, 48.96, 225, 5000,{.forwards = false});
+    // Collect Octoballs from Bottom right Center Field
+    chassis.moveToPoint(-27, 23, 5000);
     chassis.waitUntilDone();
-    Hood.extend();
+    chassis.turnToHeading(180, 3000);
+
+
+    // deposit in low goal
+    chassis.moveToPose(-33.28, 13.121, 225, 5000, {.horizontalDrift = 2,.lead=0.65});
+    chassis.waitUntilDone();
+    IO_velocities(-200,300,-200);
+
 }
 
 void Neutral() {
@@ -129,7 +161,7 @@ void competition_initialize() {}
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 void autonomous() {
-    Skills();
+    Left_side();
 }
 
 /**
@@ -150,42 +182,32 @@ void opcontrol() {
         if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
             scraperPistion.toggle();
         }
-        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)){
-            DPmechPiston.toggle();
-        }
 
         // Debugging
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-            scraperPistion.extend();
         }
-        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-            scraperPistion.retract();
-        }
+        
 
-
-        // Optical Sensor Configuration
-        optical_sensor.disable_gesture();
-        optical_sensor.set_led_pwm(50);
 
         // Intake & Outtake Control
         if (controller.get_digital(DIGITAL_R1)) {
-            IO_velocities(600,200,200);
+            IO_velocities(200,-300,200);
             Hood.retract();
             // Intake with Hood retracted
         }
         else if (controller.get_digital(DIGITAL_R2)) {
-            IO_velocities(-600,-200,-200);
+            IO_velocities(-200,300,-200);
             // Bottom outtake
         }
         else if (controller.get_digital(DIGITAL_L1)) {
-            IO_velocities(600,200,200);
+            IO_velocities(200,-300,200);
             Hood.extend();
             // Intake with Hood extended
         }
         else if (controller.get_digital(DIGITAL_L2)) {
-            IO_velocities(600,200,-200);
+            IO_velocities(-200,-300,200);
             Hood.retract();
-            // Middle outtake 
+            // Middle outtake
 
         }
         else {

@@ -8,7 +8,6 @@ extern pros::Controller controller;
 // Creating the Pneumatics
 extern pros::adi::Pneumatics Hood;
 extern pros::adi::Pneumatics scraperPistion;
-extern pros::adi::Pneumatics DPmechPiston;
 
 // Motors responsible for Intake & Outtake 
 extern pros::Motor IO2;

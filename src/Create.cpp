@@ -5,27 +5,27 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Creating the Pneumatics
-pros::adi::Pneumatics Hood('b', true); // PS: 'true' means the pistons start retracted
-pros::adi::Pneumatics scraperPistion('c', true);
-pros::adi::Pneumatics DPmechPiston('d', false);
+pros::adi::Pneumatics Hood('h', true); // PS: 'true' means the pistons start retracted
+pros::adi::Pneumatics scraperPistion('g', false);
 
 //Motors responsible for Intake & Outtake 
-pros::Motor IO2 (2, pros::MotorGearset::blue);
-pros::Motor IO3 (-3, pros::MotorGearset::green);
+pros::Motor IO2 (2, pros::MotorGearset::green);
+pros::Motor IO3 (3, pros::MotorGearset::blue);
 pros::Motor IO4 (4, pros::MotorGearset::green);
-// Intake/Outtake motors on ports 8, 9, and 10 (all forwards)
-
-pros::Optical optical_sensor(6); // Optical sensor on port 6
+// Intake/Outtake motors on ports 2, 3, and 4 (all forwards)
 
 // Creating the components for the chassis
-pros::MotorGroup leftmotors({-19, 18, -20}, pros::MotorGearset::blue); // left motors use 600 RPM cartridges
-pros::MotorGroup rightmotors({13, -15, 14}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
-// left motors on ports 19 (reversed), 18 (reversed), and 20 (reversed)
-// right motors on ports 13 (forwards), 15 (forwards), and 14 (forwards)
+pros::MotorGroup leftmotors({-11, 17, -15}, pros::MotorGearset::blue); // left motors use 600 RPM cartridges
+pros::MotorGroup rightmotors({16, -14, 13}, pros::MotorGearset::blue); // right motors use 600 RPM cartridges
+// left motors on ports 11 (reversed), 17 (forwards), and 15 (reversed)
+// right motors on ports 16 (forwards), 14 (reversed), and 13 (forwards)
 
 /**  Note:
   *  Front Width: 13 inches
   *  Side Length: 15.5 inches
+  *
+  *  True Length: 16.5 Inches
+  *  True Width: 13 Inches
   */  
 lemlib::Drivetrain drivetrain(&leftmotors, // left motor group
                               &rightmotors, // right motor group
